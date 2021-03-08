@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Web Demo Suite" parallel="methods"
+	   thread-count="1" verbose="0" >
+
+	<test name="ios emu test" enabled="true">
+		<classes>
+			<class name="tests.EmuSim.app.LocationIosSimAppTest"/>
+		</classes>
+	</test>
+
+</suite>

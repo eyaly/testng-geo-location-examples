@@ -40,7 +40,7 @@ public class LocationIosSimAppTest {
 
         DesiredCapabilities capabilities = new DesiredCapabilities();
         if (host.equals("sauce")) {
-
+            System.out.println("Sauce iOS Native - Run on Sauce Simulator");
             String username = System.getenv("SAUCE_USERNAME");
             String accesskey = System.getenv("SAUCE_ACCESS_KEY");
             String sauceUrl;
@@ -59,11 +59,12 @@ public class LocationIosSimAppTest {
             capabilities.setCapability("name", methodName);
         }
         else {
+            System.out.println("Sauce iOS Native - Run on Local Simulator");
             // Run on local Appium Server
             url = new URL("http://localhost:4723/wd/hub");
 
-            capabilities.setCapability("platformVersion", "14.7");
-            capabilities.setCapability("deviceName", "iPhone 8");
+            capabilities.setCapability("platformVersion", "12.4");
+            capabilities.setCapability("deviceName", "iPhone 6");
             capabilities.setCapability("noReset", false);
             capabilities.setCapability("app","/Users/eyalyovel/Documents/sauce/demo/apps/ios/iOS.Simulator.SauceLabs.Mobile.Sample.app.2.7.1.zip");
         }
@@ -72,8 +73,10 @@ public class LocationIosSimAppTest {
         capabilities.setCapability("automationName", "XCuiTest");
 
         // Only for Simulators
-        capabilities.setCapability("locationServicesEnabled", true);
-        capabilities.setCapability("locationServicesAuthorized", true);
+       // capabilities.setCapability("locationServicesEnabled", true);
+       // capabilities.setCapability("locationServicesAuthorized", true);
+
+      //  capabilities.setCapability("appium:permissions", "{\"com.saucelabs.SwagLabMobileApp\": {\"location\": \"always\"}}");
 
         try{
             iosDriver.set(new IOSDriver(url, capabilities));
@@ -160,14 +163,14 @@ public class LocationIosSimAppTest {
         String mainPlatformVersion = platformVersion.split("\\.")[0];
         System.out.println("platform version is: " + platformVersion );
         if (Integer.valueOf(mainPlatformVersion) < 13) {
-            // can be alert with 2 options
+            //  alert with 2 options
             try {
                 driver.switchTo().alert().accept();
             } catch (NoAlertPresentException e) {
                 System.out.println("Alert is not present" + e.getMessage());
             }
         } else {
-            // new alert with 3 options
+            //  alert with 3 options
             try {
                 WebDriverWait wait = new WebDriverWait(driver, 2);
 

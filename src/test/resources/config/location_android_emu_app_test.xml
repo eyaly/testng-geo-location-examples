@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Web Demo Suite" verbose="0" >
+
+	<test name="android RDC App test" enabled="true">
+		<classes>
+			<class name="tests.EmuSim.app.LocationAndroidEmuAppTest"/>
+		</classes>
+	</test>
+
+</suite>

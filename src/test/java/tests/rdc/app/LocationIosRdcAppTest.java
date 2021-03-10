@@ -103,7 +103,7 @@ public class LocationIosRdcAppTest {
         System.out.println("Sauce - Start setLocation test");
 
         login("standard_user", "secret_sauce");
-        goToGeoLocationMenu();
+        selectGeoLocationMenu();
 
         waiting(2);
         setGeoLocation(48.8584,  2.2945);
@@ -117,7 +117,7 @@ public class LocationIosRdcAppTest {
         System.out.println("Sauce - Start setLocation test");
 
         login("standard_user", "secret_sauce");
-        goToGeoLocationMenu();
+        selectGeoLocationMenu();
 
         waiting(2);
         setGeoLocation(51.5055,  -0.0754);
@@ -143,7 +143,7 @@ public class LocationIosRdcAppTest {
         submitButton.click();
     }
 
-    public void goToGeoLocationMenu(){
+    public void selectGeoLocationMenu(){
         By testMenu = By.name("test-Menu");
         By testGeoLocationItem = By.name("test-GEO LOCATION");
         IOSDriver driver = getiosDriver();

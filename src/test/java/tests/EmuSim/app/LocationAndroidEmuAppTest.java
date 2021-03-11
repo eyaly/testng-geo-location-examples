@@ -3,6 +3,7 @@ package tests.EmuSim.app;
 
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.android.AndroidDriver;
+import org.decimal4j.util.DoubleRounder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import static helpers.Config.host;
 import static helpers.Config.region;
 import static helpers.Utils.waiting;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LocationAndroidEmuAppTest {
 
@@ -83,21 +85,10 @@ public class LocationAndroidEmuAppTest {
         } finally {
             getAndroidDriver().quit();
         }
-
     }
 
     public  AndroidDriver getAndroidDriver() {
         return androidDriver.get();
-    }
-
-    public void getLocation() {
-        AndroidDriver driver = getAndroidDriver();
-        System.out.println("Sauce - Start getLocation test");
-        System.out.println("Sauce - Context is: " + driver.getContext());
-        driver.context("NATIVE_APP");
-
-        Location location = driver.location();
-        System.out.println("Sauce current location is: Latitude " + location.getLatitude() + " .longitude " + location.getLongitude());
     }
 
     @Test
@@ -111,8 +102,7 @@ public class LocationAndroidEmuAppTest {
 
         waiting(2);
         setGeoLocation(48.8584,  2.2945);
-        // wait 7 sec to update with the changes
-        waiting(7);
+
     }
 
     @Test
@@ -182,10 +172,8 @@ public class LocationAndroidEmuAppTest {
             }
 
             // To enable the App in the location service
-            // enable popup:
-            // For a better experience, turn on device location, which uses Google’s location service.
+            // dialog: For a better experience, turn on device location, which uses Google’s location service.
             try {
-                //driver.switchTo().alert().accept();
                 final WebElement BtnOK = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("android:id/button1")));
                 BtnOK.click();
             } catch (Exception e){
@@ -206,7 +194,19 @@ public class LocationAndroidEmuAppTest {
     }
 
     public void setGeoLocation(double latitude, double longitude){
+        String latitudeLocator = "test-latitude";
+        String longitudeLocator = "test-longitude";
+
         AndroidDriver driver = getAndroidDriver();
         driver.setLocation(new Location(latitude, longitude, 0.0));
+
+        // wait 2 sec to update with the changes
+        waiting(2);
+
+        // Verify
+        double actualLatitude = DoubleRounder.round(Double.valueOf(driver.findElementByAccessibilityId(latitudeLocator).getText()),4);
+        double actualLongitude = DoubleRounder.round(Double.valueOf(driver.findElementByAccessibilityId(longitudeLocator).getText()),4);
+        assertThat(actualLatitude).isEqualTo(latitude).as("Incorrect latitude");
+        assertThat(actualLongitude).isEqualTo(longitude).as("Incorrect longitude");
     }
 }

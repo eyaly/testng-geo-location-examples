@@ -7,6 +7,7 @@ import io.appium.java_client.MobileBy;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.IOSElement;
+import org.decimal4j.util.DoubleRounder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
@@ -31,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import helpers.Utils.*;
 
 import static helpers.Utils.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LocationIosRdcAppTest {
 
@@ -58,7 +60,7 @@ public class LocationIosRdcAppTest {
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
         capabilities.setCapability("deviceName", "iPhone.*");
-        capabilities.setCapability("platformVersion", "14");
+        capabilities.setCapability("platformVersion", "12");
         capabilities.setCapability("platformName", "iOS");
         capabilities.setCapability("automationName", "XCuiTest");
         capabilities.setCapability("name", methodName);
@@ -121,8 +123,6 @@ public class LocationIosRdcAppTest {
 
         waiting(2);
         setGeoLocation(51.5055,  -0.0754);
-        // wait 5 sec to update with the changes
-        waiting(5);
     }
 
     public void login(String user, String pass){
@@ -177,8 +177,20 @@ public class LocationIosRdcAppTest {
     }
 
     public void setGeoLocation(double latitude, double longitude){
+        String latitudeLocator = "test-latitude";
+        String longitudeLocator = "test-longitude";
+
         IOSDriver driver = getiosDriver();
         driver.setLocation(new Location(latitude, longitude, 0.0));
+
+        // wait 2 sec to update with the changes
+        waiting(2);
+
+        // Verify
+        double actualLatitude = DoubleRounder.round(Double.valueOf(driver.findElementByAccessibilityId(latitudeLocator).getText()),4);
+        double actualLongitude = DoubleRounder.round(Double.valueOf(driver.findElementByAccessibilityId(longitudeLocator).getText()),4);
+        assertThat(actualLatitude).isEqualTo(latitude).as("Incorrect latitude");
+        assertThat(actualLongitude).isEqualTo(longitude).as("Incorrect longitude");
     }
 
 }

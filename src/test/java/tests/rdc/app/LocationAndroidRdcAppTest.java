@@ -6,6 +6,7 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.touch.offset.PointOption;
+import org.decimal4j.util.DoubleRounder;
 import org.openqa.selenium.*;
 import org.openqa.selenium.html5.Location;
 import org.openqa.selenium.interactions.touch.TouchActions;
@@ -30,6 +31,7 @@ import static helpers.Config.host;
 import static helpers.Config.region;
 import static helpers.Utils.handleiOSMapsWeb;
 import static helpers.Utils.waiting;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LocationAndroidRdcAppTest {
 
@@ -59,7 +61,7 @@ public class LocationAndroidRdcAppTest {
         capabilities.setCapability("platformName", "Android");
         capabilities.setCapability("automationName", "UiAutomator2");
         capabilities.setCapability("orientation", "PORTRAIT");
-        capabilities.setCapability("platformVersion", "10");
+        capabilities.setCapability("platformVersion", "8");
 
         capabilities.setCapability("app", "https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/Android.SauceLabs.Mobile.Sample.app.2.7.1.apk");
         capabilities.setCapability("appWaitActivity", "com.swaglabsmobileapp.MainActivity");
@@ -89,16 +91,6 @@ public class LocationAndroidRdcAppTest {
         return androidDriver.get();
     }
 
-    public void getLocation() {
-        AndroidDriver driver = getAndroidDriver();
-        System.out.println("Sauce - Start getLocation test");
-        System.out.println("Sauce - Context is: " + driver.getContext());
-        driver.context("NATIVE_APP");
-
-        Location location = driver.location();
-        System.out.println("Sauce current location is: Latitude " + location.getLatitude() + " .longitude " + location.getLongitude());
-    }
-
     @Test
     public void setLocationEiffelTower() {
         AndroidDriver driver = getAndroidDriver();
@@ -110,8 +102,6 @@ public class LocationAndroidRdcAppTest {
 
         waiting(2);
         setGeoLocation(48.8584,  2.2945);
-        // wait 7 sec to update with the changes
-        waiting(7);
     }
 
     @Test
@@ -125,8 +115,6 @@ public class LocationAndroidRdcAppTest {
 
         waiting(2);
         setGeoLocation(51.5055,  -0.0754);
-        // wait 7 sec to update with the changes
-        waiting(7);
     }
 
     public void login(String user, String pass){
@@ -192,8 +180,20 @@ public class LocationAndroidRdcAppTest {
     }
 
     public void setGeoLocation(double latitude, double longitude){
+        String latitudeLocator = "test-latitude";
+        String longitudeLocator = "test-longitude";
+
         AndroidDriver driver = getAndroidDriver();
         driver.setLocation(new Location(latitude, longitude, 0.0));
+
+        // wait 2 sec to update with the changes
+        waiting(2);
+
+        // Verify
+        double actualLatitude = DoubleRounder.round(Double.valueOf(driver.findElementByAccessibilityId(latitudeLocator).getText()),4);
+        double actualLongitude = DoubleRounder.round(Double.valueOf(driver.findElementByAccessibilityId(longitudeLocator).getText()),4);
+        assertThat(actualLatitude).isEqualTo(latitude).as("Incorrect latitude");
+        assertThat(actualLongitude).isEqualTo(longitude).as("Incorrect longitude");
     }
 
 }

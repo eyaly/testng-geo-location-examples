@@ -1,12 +1,10 @@
-package tests.rdc.app;
+package tests.all;
 
 
 import com.google.common.collect.ImmutableMap;
 import helpers.Utils;
 import io.appium.java_client.MobileBy;
-import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.ios.IOSElement;
 import org.decimal4j.util.DoubleRounder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -14,7 +12,6 @@ import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.html5.Location;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
@@ -26,16 +23,12 @@ import org.testng.annotations.Test;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import helpers.Utils.*;
-
-import static helpers.Utils.*;
+import static helpers.Utils.waiting;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LocationIosRdcAppTest {
+public class LocationIosAppTest {
 
     private static ThreadLocal<IOSDriver> iosDriver = new ThreadLocal<IOSDriver>();
     private static ThreadLocal<Boolean> isFirstRun = new ThreadLocal<Boolean>();
@@ -56,8 +49,18 @@ public class LocationIosRdcAppTest {
         String methodName = method.getName();
         URL url = new URL(SAUCE_REMOTE_URL);
 
+        String app;
+        boolean isRDC = true;
         String deviceName = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("deviceName");
         String platformVersion = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("platformVersion");
+        String appiumVersion = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("appiumVersion");
+        if (deviceName.contains("Simulator")){
+            app = "https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/iOS.Simulator.SauceLabs.Mobile.Sample.app.2.7.1.zip";
+            isRDC = false;
+        } else{
+            app = "https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/iOS.RealDevice.SauceLabs.Mobile.Sample.app.2.7.1.ipa";
+        }
+
 
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
@@ -66,7 +69,11 @@ public class LocationIosRdcAppTest {
         capabilities.setCapability("platformName", "iOS");
         capabilities.setCapability("automationName", "XCuiTest");
         capabilities.setCapability("name", methodName);
-        capabilities.setCapability("app", "https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/iOS.RealDevice.SauceLabs.Mobile.Sample.app.2.7.1.ipa");
+        capabilities.setCapability("app", app);
+
+        if (appiumVersion !=  null) {
+            capabilities.setCapability("appiumVersion", appiumVersion);
+        }
 
         capabilities.setCapability("noReset", false);
         capabilities.setCapability("cacheId", "iOS_RDC_1234");
@@ -76,17 +83,18 @@ public class LocationIosRdcAppTest {
         iosDriver.set(new IOSDriver(url, capabilities));
         getiosDriver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
-        // If this is the first execution on the device
-
-        if (isFirstRun.get()) {
-            System.out.println("Sauce - Check Location settings");
-            getiosDriver().executeScript("mobile: pressButton", ImmutableMap.of("name", "home"));
-            // preferences app
-            Utils utils = new Utils();
-            utils.enableIosLocationServices(getiosDriver());
-            isFirstRun.set(Boolean.FALSE);
-            // back to the native app
-            getiosDriver().launchApp();
+        if (isRDC) {
+            // If this is the first execution on the device
+            if (isFirstRun.get()) {
+                System.out.println("Sauce - Check Location settings");
+                getiosDriver().executeScript("mobile: pressButton", ImmutableMap.of("name", "home"));
+                // preferences app
+                Utils utils = new Utils();
+                utils.enableIosLocationServices(getiosDriver());
+                isFirstRun.set(Boolean.FALSE);
+                // back to the native app
+                getiosDriver().launchApp();
+            }
         }
     }
 
@@ -104,7 +112,7 @@ public class LocationIosRdcAppTest {
     @Test
     public void setLocationEiffelTower() {
 
-        System.out.println("Sauce - Start setLocation test");
+        System.out.println("Sauce - Start setLocationEiffelTower test");
 
         login("standard_user", "secret_sauce");
         selectGeoLocationMenu();
@@ -116,7 +124,7 @@ public class LocationIosRdcAppTest {
     @Test
     public void setLocationTowerBridge() {
 
-        System.out.println("Sauce - Start setLocation test");
+        System.out.println("Sauce - Start setLocationTowerBridge test");
 
         login("standard_user", "secret_sauce");
         selectGeoLocationMenu();
@@ -160,7 +168,7 @@ public class LocationIosRdcAppTest {
             try {
                 driver.switchTo().alert().accept();
             } catch (NoAlertPresentException e) {
-                System.out.println("Alert is not present" + e.getMessage());
+                System.out.println("Alert is not presented" + e.getMessage());
             }
         } else {
           // new alert with 3 options
@@ -170,9 +178,8 @@ public class LocationIosRdcAppTest {
                 final WebElement alertAllow = wait.until(ExpectedConditions.visibilityOfElementLocated(new MobileBy.ByAccessibilityId("Allow While Using App")));
                 alertAllow.click();
             } catch (NoAlertPresentException e) {
-                System.out.println("Alert is not present" + e.getMessage());
+                System.out.println("Alert is not presented" + e.getMessage());
             }
-
         }
     }
 

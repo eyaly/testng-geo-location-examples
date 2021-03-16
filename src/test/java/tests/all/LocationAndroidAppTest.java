@@ -1,4 +1,4 @@
-package tests.EmuSim.app;
+package tests.all;
 
 
 import io.appium.java_client.MobileBy;
@@ -13,10 +13,10 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.Reporter;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -28,7 +28,7 @@ import static helpers.Config.region;
 import static helpers.Utils.waiting;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LocationAndroidEmuAppTest {
+public class LocationAndroidAppTest {
 
     private static ThreadLocal<AndroidDriver> androidDriver = new ThreadLocal<AndroidDriver>();
 
@@ -36,45 +36,42 @@ public class LocationAndroidEmuAppTest {
     public void setup(Method method) throws MalformedURLException {
 
         System.out.println("Sauce Android Native - BeforeMethod hook");
-        DesiredCapabilities capabilities = new DesiredCapabilities();
         String methodName = method.getName();
         URL url;
-        if (host.equals("sauce")) {
-            String username = System.getenv("SAUCE_USERNAME");
-            String accesskey = System.getenv("SAUCE_ACCESS_KEY");
-            String sauceUrl;
-            if (region.equalsIgnoreCase("eu")) {
-                sauceUrl = "@ondemand.eu-central-1.saucelabs.com:443";
-            } else {
-                sauceUrl = "@ondemand.us-west-1.saucelabs.com:443";
-            }
-            String SAUCE_REMOTE_URL = "https://" + username + ":" + accesskey + sauceUrl + "/wd/hub";
-            url = new URL(SAUCE_REMOTE_URL);
 
-
-            String deviceName = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("deviceName");
-            String platformVersion = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("platformVersion");
-
-
-            capabilities.setCapability("deviceName", "Google Pixel 3 XL GoogleAPI Emulator");
-            capabilities.setCapability("platformVersion", "9.0");
-            capabilities.setCapability("name", methodName);
-            capabilities.setCapability("appiumVersion", "1.18.1");
-
-            capabilities.setCapability("app", "https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/Android.SauceLabs.Mobile.Sample.app.2.7.1.apk");
-            capabilities.setCapability("appWaitActivity", "com.swaglabsmobileapp.MainActivity");
-
+        String username = System.getenv("SAUCE_USERNAME");
+        String accesskey = System.getenv("SAUCE_ACCESS_KEY");
+        String sauceUrl;
+        if (region.equalsIgnoreCase("eu")) {
+            sauceUrl = "@ondemand.eu-central-1.saucelabs.com:443";
         } else {
-            // Run on local Appium Server
-            capabilities.setCapability("deviceName", "emulator-5554");
-            url = new URL("http://localhost:4723/wd/hub");
+            sauceUrl = "@ondemand.us-west-1.saucelabs.com:443";
         }
+        String SAUCE_REMOTE_URL = "https://" + username + ":" + accesskey + sauceUrl + "/wd/hub";
+        url = new URL(SAUCE_REMOTE_URL);
 
+        String deviceName = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("deviceName");
+        String platformVersion = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("platformVersion");
+        String appiumVersion = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("appiumVersion");
+
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+
+        capabilities.setCapability("deviceName", deviceName == null ? "Samsung.*" : deviceName);
+        capabilities.setCapability("platformVersion", platformVersion == null ? "11" : platformVersion);
         capabilities.setCapability("platformName", "Android");
         capabilities.setCapability("automationName", "UiAutomator2");
+        capabilities.setCapability("orientation", "PORTRAIT");
 
-        capabilities.setCapability("locationServicesEnabled", true);
-        capabilities.setCapability("locationServicesAuthorized", true);
+        capabilities.setCapability("app", "https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/Android.SauceLabs.Mobile.Sample.app.2.7.1.apk");
+        capabilities.setCapability("appWaitActivity", "com.swaglabsmobileapp.MainActivity");
+        capabilities.setCapability("name", methodName);
+
+        if (appiumVersion !=  null) {
+            capabilities.setCapability("appiumVersion", appiumVersion);
+        }
+
+        capabilities.setCapability("noReset", false);
+        capabilities.setCapability("cacheId", "Android_RDC_1234");
 
         androidDriver.set(new AndroidDriver(url, capabilities));
         getAndroidDriver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
@@ -90,6 +87,7 @@ public class LocationAndroidEmuAppTest {
         } finally {
             getAndroidDriver().quit();
         }
+
     }
 
     public  AndroidDriver getAndroidDriver() {
@@ -107,7 +105,6 @@ public class LocationAndroidEmuAppTest {
 
         waiting(2);
         setGeoLocation(48.8584,  2.2945);
-
     }
 
     @Test
@@ -121,8 +118,6 @@ public class LocationAndroidEmuAppTest {
 
         waiting(2);
         setGeoLocation(51.5055,  -0.0754);
-        // wait 7 sec to update with the changes
-        waiting(7);
     }
 
     public void login(String user, String pass){
@@ -163,19 +158,18 @@ public class LocationAndroidEmuAppTest {
         WebDriverWait wait = new WebDriverWait(driver, 2);
         String deviceApilovel = driver.getCapabilities().getCapability("deviceApiLevel").toString();
         System.out.println("Sauce - Device API level is:"  + deviceApilovel);
-        // for api < 29 (less than android 10)
+        // for api < 28 (android 9)
         if (Long.valueOf(deviceApilovel) < 29) {
 
             // permission popup with 2 options
             try {
-                //driver.switchTo().alert().accept();
                 final WebElement allowBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.android.packageinstaller:id/permission_allow_button")));
                 allowBtn.click();
-            } catch (Exception e){
+            } catch (NoAlertPresentException e){
                 // Do nothing - the popup dialog doesn't exist
                 System.out.println("Alert is not present" + e.getMessage());
             }
-        } else { // for api >= 29 (android 10)
+        } else { // for api >= 28 (android 9)
             // permission popup with 3 options
             try {
                 final WebElement allowBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.android.permissioncontroller:id/permission_allow_foreground_only_button")));
@@ -185,7 +179,6 @@ public class LocationAndroidEmuAppTest {
                 System.out.println("Alert is not present" + e.getMessage());
             }
         }
-
         // To enable the App in the location service
         // dialog: For a better experience, turn on device location, which uses Google’s location service.
         try {
@@ -213,4 +206,5 @@ public class LocationAndroidEmuAppTest {
         assertThat(actualLatitude).isEqualTo(latitude).as("Incorrect latitude");
         assertThat(actualLongitude).isEqualTo(longitude).as("Incorrect longitude");
     }
+
 }

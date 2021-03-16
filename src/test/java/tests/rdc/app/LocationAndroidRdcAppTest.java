@@ -16,6 +16,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -55,20 +56,28 @@ public class LocationAndroidRdcAppTest {
         String SAUCE_REMOTE_URL = "https://" + username + ":" + accesskey + sauceUrl + "/wd/hub";
         url = new URL(SAUCE_REMOTE_URL);
 
+        String deviceName = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("deviceName");
+        String platformVersion = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("platformVersion");
+        String appiumVersion = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("appiumVersion");
+
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
-        capabilities.setCapability("deviceName", "Samsung.*");
+        capabilities.setCapability("deviceName", deviceName == null ? "Samsung.*" : deviceName);
+        capabilities.setCapability("platformVersion", platformVersion == null ? "11" : platformVersion);
         capabilities.setCapability("platformName", "Android");
         capabilities.setCapability("automationName", "UiAutomator2");
         capabilities.setCapability("orientation", "PORTRAIT");
-        capabilities.setCapability("platformVersion", "8");
 
         capabilities.setCapability("app", "https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/Android.SauceLabs.Mobile.Sample.app.2.7.1.apk");
         capabilities.setCapability("appWaitActivity", "com.swaglabsmobileapp.MainActivity");
         capabilities.setCapability("name", methodName);
 
+        if (appiumVersion !=  null) {
+            capabilities.setCapability("appiumVersion", appiumVersion);
+        }
+
         capabilities.setCapability("noReset", false);
-        capabilities.setCapability("cacheId", "1234");
+        capabilities.setCapability("cacheId", "Android_RDC_1234");
 
         androidDriver.set(new AndroidDriver(url, capabilities));
         getAndroidDriver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
@@ -160,9 +169,8 @@ public class LocationAndroidRdcAppTest {
 
             // permission popup with 2 options
             try {
-                driver.switchTo().alert().accept();
-//                final WebElement allowBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.android.packageinstaller:id/permission_allow_button")));
-//                allowBtn.click();
+                final WebElement allowBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.android.packageinstaller:id/permission_allow_button")));
+                allowBtn.click();
             } catch (NoAlertPresentException e){
                 // Do nothing - the popup dialog doesn't exist
                 System.out.println("Alert is not present" + e.getMessage());

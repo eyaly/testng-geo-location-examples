@@ -3,6 +3,7 @@ package helpers;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.ios.IOSDriver;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.html5.Location;
 import org.openqa.selenium.remote.RemoteWebElement;
@@ -30,7 +31,6 @@ public class Utils {
         // Launch preferences
         driver.activateApp("com.apple.Preferences");
         driver.context("NATIVE_APP");
-        waiting(2);
 
         // privacy
         RemoteWebElement settingsTable = (RemoteWebElement)driver.findElementByIosNsPredicate("type == \"XCUIElementTypeTable\"");
@@ -45,7 +45,7 @@ public class Utils {
         WebElement privacyBtn = driver.findElementByIosNsPredicate("label == 'Privacy' AND name == 'Privacy' AND type == 'XCUIElementTypeCell'");
         privacyBtn.click();
 
-        // Click on Locatiom Services
+        // Click on Location Services
         driver.findElementByIosClassChain("**/XCUIElementTypeStaticText[`label == \"Location Services\"`]").click();
 
         // Location services check
@@ -102,7 +102,7 @@ public class Utils {
 
         driver.get("https://maps.google.com");
 
-        WebDriverWait wait = new WebDriverWait(driver, 5);
+        WebDriverWait wait = new WebDriverWait(driver, 2);
 
         //1. Check if the "Stay on Web" button is presented and click on it (need to be in webview)
         try {
@@ -117,9 +117,6 @@ public class Utils {
         Set<String> contextNames = driver.getContextHandles();
         // filter the webview context
         Set<String> contextWebNames = contextNames.stream().filter(name -> name.contains("WEBVIEW")).collect(Collectors.toSet());
-//        for (String contextWebName : contextWebNames) {
-//            System.out.println(contextWebName); //prints out something like NATIVE_APP \n WEBVIEW_1
-//        }
 
         // set context to WEBVIEW
         //driver.context(contextWebNames.toArray()[0].toString());
@@ -127,15 +124,28 @@ public class Utils {
         WebElement myLocationBtn =  driver.findElementByClassName("ml-button-my-location-fab");
         myLocationBtn.click();
 
-        waiting(5);  // waiting for seeing in the video the location
+        waiting(2);  // waiting for seeing in the video the location
         driver.context("NATIVE_APP");
         // 3. Allow Safari to use your location? Allow while using App
-        try {
-            WebElement useYourLocation = wait.until(ExpectedConditions.visibilityOfElementLocated(new MobileBy.ByAccessibilityId("Allow While Using App")));
-            useYourLocation.click();
-        } catch (Exception e){
-            // Do nothing - the popup dialog doesn't exist
-            System.out.println("Allow Safari to use your location? - is not presented");
+        String platformVersion = driver.getCapabilities().getCapability("platformVersion").toString();
+        // version can be 12.3.1 so it is not long number. Need to get only the main vrsion (12 in the example)
+        String mainPlatformVersion = platformVersion.split("\\.")[0];
+        System.out.println("platform version is: " + platformVersion );
+        if (Integer.valueOf(mainPlatformVersion) < 13) {
+            // can be alert with 2 options
+            try {
+                driver.switchTo().alert().accept();
+            } catch (NoAlertPresentException e) {
+                System.out.println("Alert is not presented" + e.getMessage());
+            }
+        } else {
+            // new alert with 3 options
+            try {
+                final WebElement alertAllow = wait.until(ExpectedConditions.visibilityOfElementLocated(new MobileBy.ByAccessibilityId("Allow While Using App")));
+                alertAllow.click();
+            } catch (NoAlertPresentException e) {
+                System.out.println("Alert is not presented" + e.getMessage());
+            }
         }
 
         // 4. Allow google to use your location? Allow

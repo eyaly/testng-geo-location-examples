@@ -65,14 +65,16 @@ public class LocationIosSimAppTest {
             // Run on local Appium Server
             url = new URL("http://localhost:4723/wd/hub");
 
-            capabilities.setCapability("platformVersion", "12.4");
-            capabilities.setCapability("deviceName", "iPhone 6");
+            capabilities.setCapability("platformVersion", "14.0");
+            capabilities.setCapability("deviceName", "iPhone 11");
             capabilities.setCapability("noReset", false);
             capabilities.setCapability("app","/Users/eyalyovel/Documents/sauce/demo/apps/ios/iOS.Simulator.SauceLabs.Mobile.Sample.app.2.7.1.zip");
         }
 
         capabilities.setCapability("platformName", "iOS");
         capabilities.setCapability("automationName", "XCuiTest");
+
+        capabilities.setCapability("autoAcceptAlerts", true);
 
         // Only for Simulators
        // capabilities.setCapability("locationServicesEnabled", true);
@@ -86,6 +88,8 @@ public class LocationIosSimAppTest {
             System.out.println("*** Problem to create the iOS driver " + e.getMessage());
             throw new RuntimeException(e);
         }
+        getiosDriver().setSetting("acceptAlertButtonSelector", "**/XCUIElementTypeButton[`label == \"Allow While Using App\"`]");
+
     }
 
     @AfterMethod
@@ -112,7 +116,7 @@ public class LocationIosSimAppTest {
         System.out.println("Sauce - Start setLocation test");
 
         login("standard_user", "secret_sauce");
-        goToGeoLocationMenu();
+        selectGeoLocationMenu();
         waiting(2);
         setGeoLocation(48.8584,  2.2945);
         // wait 5 sec to update with the changes
@@ -125,7 +129,7 @@ public class LocationIosSimAppTest {
         System.out.println("Sauce - Start setLocation test");
 
         login("standard_user", "secret_sauce");
-        goToGeoLocationMenu();
+        selectGeoLocationMenu();
 
         waiting(2);
         setGeoLocation(51.5055,  -0.0754);
@@ -150,7 +154,7 @@ public class LocationIosSimAppTest {
         waiting(1);
     }
 
-    public void goToGeoLocationMenu(){
+    public void selectGeoLocationMenu(){
         By testMenu = By.name("test-Menu");
         By testGeoLocationItem = By.name("test-GEO LOCATION");
         IOSDriver driver = getiosDriver();
@@ -158,28 +162,28 @@ public class LocationIosSimAppTest {
         driver.findElement(testMenu).click();
         driver.findElement(testGeoLocationItem).click();
 
-        String platformVersion = driver.getCapabilities().getCapability("platformVersion").toString();
-        // version can be 12.3.1 so it is not long number. Need to get only the main vrsion (12 in the example)
-        String mainPlatformVersion = platformVersion.split("\\.")[0];
-        System.out.println("platform version is: " + platformVersion );
-        if (Integer.valueOf(mainPlatformVersion) < 13) {
-            //  alert with 2 options
-            try {
-                driver.switchTo().alert().accept();
-            } catch (NoAlertPresentException e) {
-                System.out.println("Alert is not present" + e.getMessage());
-            }
-        } else {
-            //  alert with 3 options
-            try {
-                WebDriverWait wait = new WebDriverWait(driver, 2);
-
-                final WebElement alertAllow = wait.until(ExpectedConditions.visibilityOfElementLocated(new MobileBy.ByAccessibilityId("Allow While Using App")));
-                alertAllow.click();
-            } catch (Exception e) {
-                System.out.println("Alert is not present" + e.getMessage());
-            }
-        }
+//        String platformVersion = driver.getCapabilities().getCapability("platformVersion").toString();
+//        // version can be 12.3.1 so it is not long number. Need to get only the main vrsion (12 in the example)
+//        String mainPlatformVersion = platformVersion.split("\\.")[0];
+//        System.out.println("platform version is: " + platformVersion );
+//        if (Integer.valueOf(mainPlatformVersion) < 13) {
+//            //  alert with 2 options
+//            try {
+//                driver.switchTo().alert().accept();
+//            } catch (NoAlertPresentException e) {
+//                System.out.println("Alert is not present" + e.getMessage());
+//            }
+//        } else {
+//            //  alert with 3 options
+//            try {
+//                WebDriverWait wait = new WebDriverWait(driver, 2);
+//
+//                final WebElement alertAllow = wait.until(ExpectedConditions.visibilityOfElementLocated(new MobileBy.ByAccessibilityId("Allow While Using App")));
+//                alertAllow.click();
+//            } catch (Exception e) {
+//                System.out.println("Alert is not present" + e.getMessage());
+//            }
+//        }
     }
 
     public void setGeoLocation(double latitude, double longitude){

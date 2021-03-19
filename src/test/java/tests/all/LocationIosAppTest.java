@@ -4,6 +4,7 @@ package tests.all;
 import com.google.common.collect.ImmutableMap;
 import helpers.Utils;
 import io.appium.java_client.MobileBy;
+import io.appium.java_client.Setting;
 import io.appium.java_client.ios.IOSDriver;
 import org.decimal4j.util.DoubleRounder;
 import org.openqa.selenium.By;
@@ -78,11 +79,19 @@ public class LocationIosAppTest {
         capabilities.setCapability("noReset", false);
         capabilities.setCapability("cacheId", "iOS_RDC_1234");
 
-        //capabilities.setCapability("autoAcceptAlerts", true);
+        // this capability will work for alerts with 2 options (iOS 12 and below)
+        capabilities.setCapability("autoAcceptAlerts", true);
 
         iosDriver.set(new IOSDriver(url, capabilities));
         getiosDriver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
+        // change the setting to accept alerts with 3 options
+        // and select the "Allow While Using App" (iOS 13 and above)
+        getiosDriver().setSetting("acceptAlertButtonSelector",
+                "**/XCUIElementTypeButton[`label == \"Allow While Using App\"`]");
+
+
+        // for simulator - By default the location services is enabled
         if (isRDC) {
             // If this is the first execution on the device
             if (isFirstRun.get()) {
@@ -96,7 +105,7 @@ public class LocationIosAppTest {
                 getiosDriver().launchApp();
             }
         }
-    }
+           }
 
     @AfterMethod
     public void teardown(ITestResult result) {
@@ -159,28 +168,28 @@ public class LocationIosAppTest {
         driver.findElement(testMenu).click();
         driver.findElement(testGeoLocationItem).click();
 
-        String platformVersion = driver.getCapabilities().getCapability("platformVersion").toString();
-        // version can be 12.3.1 so it is not long number. Need to get only the main vrsion (12 in the example)
-        String mainPlatformVersion = platformVersion.split("\\.")[0];
-        System.out.println("platform version is: " + platformVersion );
-        if (Integer.valueOf(mainPlatformVersion) < 13) {
-            // can be alert with 2 options
-            try {
-                driver.switchTo().alert().accept();
-            } catch (NoAlertPresentException e) {
-                System.out.println("Alert is not presented" + e.getMessage());
-            }
-        } else {
-          // new alert with 3 options
-            try {
-                WebDriverWait wait = new WebDriverWait(driver, 2);
-
-                final WebElement alertAllow = wait.until(ExpectedConditions.visibilityOfElementLocated(new MobileBy.ByAccessibilityId("Allow While Using App")));
-                alertAllow.click();
-            } catch (NoAlertPresentException e) {
-                System.out.println("Alert is not presented" + e.getMessage());
-            }
-        }
+//        String platformVersion = driver.getCapabilities().getCapability("platformVersion").toString();
+//        // version can be 12.3.1 so it is not long number. Need to get only the main vrsion (12 in the example)
+//        String mainPlatformVersion = platformVersion.split("\\.")[0];
+//        System.out.println("platform version is: " + platformVersion );
+//        if (Integer.valueOf(mainPlatformVersion) < 13) {
+//            // can be alert with 2 options
+//            try {
+//                driver.switchTo().alert().accept();
+//            } catch (NoAlertPresentException e) {
+//                System.out.println("Alert is not presented" + e.getMessage());
+//            }
+//        } else {
+//          // new alert with 3 options
+//            try {
+//                WebDriverWait wait = new WebDriverWait(driver, 2);
+//
+//                final WebElement alertAllow = wait.until(ExpectedConditions.visibilityOfElementLocated(new MobileBy.ByAccessibilityId("Allow While Using App")));
+//                alertAllow.click();
+//            } catch (NoAlertPresentException e) {
+//                System.out.println("Alert is not presented" + e.getMessage());
+//            }
+//        }
     }
 
     public void setGeoLocation(double latitude, double longitude){

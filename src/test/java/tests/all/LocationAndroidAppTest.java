@@ -73,6 +73,9 @@ public class LocationAndroidAppTest {
         capabilities.setCapability("noReset", false);
         capabilities.setCapability("cacheId", "Android_RDC_1234");
 
+        // Grant permission for alert popups
+        capabilities.setCapability("autoGrantPermissions", true);
+
         androidDriver.set(new AndroidDriver(url, capabilities));
         getAndroidDriver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
@@ -155,33 +158,34 @@ public class LocationAndroidAppTest {
         WebElement geoLocationMenu = (WebElement) driver.findElementByAccessibilityId(geoLocationName);
         geoLocationMenu.click();
 
-        WebDriverWait wait = new WebDriverWait(driver, 2);
-        String deviceApilovel = driver.getCapabilities().getCapability("deviceApiLevel").toString();
-        System.out.println("Sauce - Device API level is:"  + deviceApilovel);
-        // for api < 28 (android 9)
-        if (Long.valueOf(deviceApilovel) < 29) {
+//        String deviceApilovel = driver.getCapabilities().getCapability("deviceApiLevel").toString();
+//        System.out.println("Sauce - Device API level is:"  + deviceApilovel);
+        // for api < 29 (android 9 and below)
+//        if (Long.valueOf(deviceApilovel) < 29) {
 
             // permission popup with 2 options
-            try {
-                final WebElement allowBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.android.packageinstaller:id/permission_allow_button")));
-                allowBtn.click();
-            } catch (NoAlertPresentException e){
-                // Do nothing - the popup dialog doesn't exist
-                System.out.println("Alert is not present" + e.getMessage());
-            }
-        } else { // for api >= 28 (android 9)
+//            try {
+//                final WebElement allowBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.android.packageinstaller:id/permission_allow_button")));
+//                allowBtn.click();
+//            } catch (NoAlertPresentException e){
+//                // Do nothing - the popup dialog doesn't exist
+//                System.out.println("Alert is not present" + e.getMessage());
+//            }
+//        } else { // for api >= 29 (android 10 and above)
             // permission popup with 3 options
-            try {
-                final WebElement allowBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.android.permissioncontroller:id/permission_allow_foreground_only_button")));
-                allowBtn.click();
-            } catch (Exception e){
-                // Do nothing - the popup dialog doesn't exist
-                System.out.println("Alert is not present" + e.getMessage());
-            }
-        }
+//            try {
+//                final WebElement allowBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.android.permissioncontroller:id/permission_allow_foreground_only_button")));
+//                allowBtn.click();
+//            } catch (Exception e){
+//                // Do nothing - the popup dialog doesn't exist
+//                System.out.println("Alert is not present" + e.getMessage());
+//            }
+//        }
+
         // To enable the App in the location service
         // dialog: For a better experience, turn on device location, which uses Google’s location service.
         try {
+            WebDriverWait wait = new WebDriverWait(driver, 2);
             final WebElement BtnOK = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("android:id/button1")));
             BtnOK.click();
         } catch (Exception e){

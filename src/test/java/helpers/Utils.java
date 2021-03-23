@@ -1,5 +1,6 @@
 package helpers;
 
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.ios.IOSDriver;
 import org.openqa.selenium.By;
@@ -94,74 +95,6 @@ public class Utils {
         waiting(4);
         System.out.println("** set location **");
         driver.setLocation(new Location(latitude, longitude, 0.0));
-
-    }
-
-    // ios map web app
-    public static void handleiOSMapsWeb(IOSDriver driver, double latitude, double longitude){
-
-        driver.get("https://maps.google.com");
-
-        WebDriverWait wait = new WebDriverWait(driver, 2);
-
-        //1. Check if the "Stay on Web" button is presented and click on it (need to be in webview)
-        try {
-            final WebElement stayOnWebBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("ml-promotion-no-thanks")));
-            stayOnWebBtn.click();
-        } catch (Exception e){
-            // Do nothing - the popup dialog doesn't exist
-            System.out.println("Stay on Web button is not presented");
-        }
-
-        // Save contexts to see which webview context to get
-        Set<String> contextNames = driver.getContextHandles();
-        // filter the webview context
-        Set<String> contextWebNames = contextNames.stream().filter(name -> name.contains("WEBVIEW")).collect(Collectors.toSet());
-
-        // set context to WEBVIEW
-        //driver.context(contextWebNames.toArray()[0].toString());
-        // 2. Click on "your location" to see the location on the map
-        WebElement myLocationBtn =  driver.findElementByClassName("ml-button-my-location-fab");
-        myLocationBtn.click();
-
-        waiting(2);  // waiting for seeing in the video the location
-        driver.context("NATIVE_APP");
-        // 3. Allow Safari to use your location? Allow while using App
-        String platformVersion = driver.getCapabilities().getCapability("platformVersion").toString();
-        // version can be 12.3.1 so it is not long number. Need to get only the main vrsion (12 in the example)
-        String mainPlatformVersion = platformVersion.split("\\.")[0];
-        System.out.println("platform version is: " + platformVersion );
-        if (Integer.valueOf(mainPlatformVersion) < 13) {
-            // can be alert with 2 options
-            try {
-                driver.switchTo().alert().accept();
-            } catch (NoAlertPresentException e) {
-                System.out.println("Alert is not presented" + e.getMessage());
-            }
-        } else {
-            // new alert with 3 options
-            try {
-                final WebElement alertAllow = wait.until(ExpectedConditions.visibilityOfElementLocated(new MobileBy.ByAccessibilityId("Allow While Using App")));
-                alertAllow.click();
-            } catch (NoAlertPresentException e) {
-                System.out.println("Alert is not presented" + e.getMessage());
-            }
-        }
-
-        // 4. Allow google to use your location? Allow
-        try {
-            WebElement allowUseYourCurrentLocation = wait.until(ExpectedConditions.visibilityOfElementLocated(new MobileBy.ByAccessibilityId("Allow")));
-            allowUseYourCurrentLocation.click();
-        } catch (Exception e){
-            // Do nothing - the popup dialog doesn't exist
-            System.out.println("Allow google to use your location? - is not presented");
-        }
-
-        // 5. set new location
-        System.out.println("** set location **");
-        driver.setLocation(new Location(latitude,longitude, 0.0));
-        // golders green tube station
-//        driver.setLocation(new Location(51.5722,-0.1944, 0.0));
 
     }
 }

@@ -1,0 +1,76 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Location Services on Sauce " verbose="0" parallel="tests" thread-count="20">
+
+	<test name="iOS RDC Web test" enabled="true">
+		<parameter name="deviceName" value="iPhone.*"></parameter>
+		<parameter name="platformVersion" value="12"></parameter>
+		<parameter name="cacheId" value="ios_web_123"></parameter>
+		<classes>
+			<class name="tests.all.LocationIosWebTest"/>
+		</classes>
+	</test>
+
+	<test name="iOS RDC Web new platform test" enabled="true">
+		<parameter name="deviceName" value="iPhone.*"></parameter>
+		<parameter name="platformVersion" value="14"></parameter>
+		<parameter name="cacheId" value="ios_web_new_123"></parameter>
+		<classes>
+			<class name="tests.all.LocationIosWebTest"/>
+		</classes>
+	</test>
+
+	<test name="Android RDC Web test" enabled="true">
+		<parameter name="deviceName" value="Samsung.*"></parameter>
+		<parameter name="platformVersion" value="9"></parameter>
+		<parameter name="cacheId" value="android_web_123"></parameter>
+		<classes>
+			<class name="tests.all.LocationAndroidWebTest"/>
+		</classes>
+	</test>
+
+	<test name="Android RDC Web new platform test" enabled="true">
+		<parameter name="deviceName" value="Samsung.*"></parameter>
+		<parameter name="platformVersion" value="11"></parameter>
+		<parameter name="cacheId" value="android_web_new_123"></parameter>
+		<classes>
+			<class name="tests.all.LocationAndroidWebTest"/>
+		</classes>
+	</test>
+
+	<test name="iOS Simulator Web new platform test" parallel="methods" enabled="true">
+		<parameter name="deviceName" value="iPhone 8 Simulator"></parameter>
+		<parameter name="platformVersion" value="14.0"></parameter>
+		<parameter name="appiumVersion" value="1.18.3"></parameter>
+		<classes>
+			<class name="tests.all.LocationIosWebTest"/>
+		</classes>
+	</test>
+
+	<test name="iOS Simulator Web test" parallel="methods" enabled="true">
+		<parameter name="deviceName" value="iPhone 7 Simulator"></parameter>
+		<parameter name="platformVersion" value="12.0"></parameter>
+		<parameter name="appiumVersion" value="1.9.1"></parameter>
+		<classes>
+			<class name="tests.all.LocationIosWebTest"/>
+		</classes>
+	</test>
+
+	<test name="Android Emulator Web new platform test" parallel="methods" enabled="true">
+		<parameter name="deviceName" value="Android GoogleAPI Emulator"></parameter>
+		<parameter name="platformVersion" value="11"></parameter>
+		<parameter name="appiumVersion" value="1.18.1"></parameter>
+		<classes>
+			<class name="tests.all.LocationAndroidWebTest"/>
+		</classes>
+	</test>
+
+	<test name="Android Emulator Web test" parallel="methods" enabled="true">
+		<parameter name="deviceName" value="Android GoogleAPI Emulator"></parameter>
+		<parameter name="platformVersion" value="10"></parameter>
+		<parameter name="appiumVersion" value="1.18.1"></parameter>
+		<classes>
+			<class name="tests.all.LocationAndroidWebTest"/>
+		</classes>
+	</test>
+
+</suite>

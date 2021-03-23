@@ -76,20 +76,17 @@ public class LocationIosSimAppTest {
 
         capabilities.setCapability("autoAcceptAlerts", true);
 
-        // Only for Simulators
-       // capabilities.setCapability("locationServicesEnabled", true);
-       // capabilities.setCapability("locationServicesAuthorized", true);
-
-      //  capabilities.setCapability("appium:permissions", "{\"com.saucelabs.SwagLabMobileApp\": {\"location\": \"always\"}}");
-
         try{
             iosDriver.set(new IOSDriver(url, capabilities));
         } catch (Exception e) {
             System.out.println("*** Problem to create the iOS driver " + e.getMessage());
             throw new RuntimeException(e);
         }
-        getiosDriver().setSetting("acceptAlertButtonSelector", "**/XCUIElementTypeButton[`label == \"Allow While Using App\"`]");
 
+        // change the setting to accept alerts with 3 options
+        // and select the "Allow While Using App" (iOS 13 and above)
+        getiosDriver().setSetting("acceptAlertButtonSelector",
+                "**/XCUIElementTypeButton[`label == \"Allow While Using App\"`]");
     }
 
     @AfterMethod

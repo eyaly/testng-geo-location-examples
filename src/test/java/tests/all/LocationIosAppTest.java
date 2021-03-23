@@ -55,6 +55,8 @@ public class LocationIosAppTest {
         String deviceName = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("deviceName");
         String platformVersion = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("platformVersion");
         String appiumVersion = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("appiumVersion");
+        String cacheId = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("cacheId");
+
         if (deviceName.contains("Simulator")){
             app = "https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/iOS.Simulator.SauceLabs.Mobile.Sample.app.2.7.1.zip";
             isRDC = false;
@@ -76,8 +78,11 @@ public class LocationIosAppTest {
             capabilities.setCapability("appiumVersion", appiumVersion);
         }
 
-        capabilities.setCapability("noReset", false);
-        capabilities.setCapability("cacheId", "iOS_RDC_1234");
+
+        if (cacheId !=  null) {
+            capabilities.setCapability("noReset", false);
+            capabilities.setCapability("cacheId", cacheId);
+        }
 
         // this capability will work for alerts with 2 options (iOS 12 and below)
         capabilities.setCapability("autoAcceptAlerts", true);
@@ -101,7 +106,7 @@ public class LocationIosAppTest {
                 Utils utils = new Utils();
                 utils.enableIosLocationServices(getiosDriver());
                 isFirstRun.set(Boolean.FALSE);
-                // back to the native app
+                // back to the app under test
                 getiosDriver().launchApp();
             }
         }
@@ -168,28 +173,6 @@ public class LocationIosAppTest {
         driver.findElement(testMenu).click();
         driver.findElement(testGeoLocationItem).click();
 
-//        String platformVersion = driver.getCapabilities().getCapability("platformVersion").toString();
-//        // version can be 12.3.1 so it is not long number. Need to get only the main vrsion (12 in the example)
-//        String mainPlatformVersion = platformVersion.split("\\.")[0];
-//        System.out.println("platform version is: " + platformVersion );
-//        if (Integer.valueOf(mainPlatformVersion) < 13) {
-//            // can be alert with 2 options
-//            try {
-//                driver.switchTo().alert().accept();
-//            } catch (NoAlertPresentException e) {
-//                System.out.println("Alert is not presented" + e.getMessage());
-//            }
-//        } else {
-//          // new alert with 3 options
-//            try {
-//                WebDriverWait wait = new WebDriverWait(driver, 2);
-//
-//                final WebElement alertAllow = wait.until(ExpectedConditions.visibilityOfElementLocated(new MobileBy.ByAccessibilityId("Allow While Using App")));
-//                alertAllow.click();
-//            } catch (NoAlertPresentException e) {
-//                System.out.println("Alert is not presented" + e.getMessage());
-//            }
-//        }
     }
 
     public void setGeoLocation(double latitude, double longitude){

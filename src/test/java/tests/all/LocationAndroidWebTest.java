@@ -1,6 +1,8 @@
 package tests.all;
 
 
+import helpers.Utils;
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.android.AndroidDriver;
 import org.decimal4j.util.DoubleRounder;
@@ -28,7 +30,7 @@ import static helpers.Config.region;
 import static helpers.Utils.waiting;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LocationAndroidAppTest {
+public class LocationAndroidWebTest {
 
     private static ThreadLocal<AndroidDriver> androidDriver = new ThreadLocal<AndroidDriver>();
 
@@ -63,8 +65,7 @@ public class LocationAndroidAppTest {
         capabilities.setCapability("automationName", "UiAutomator2");
         capabilities.setCapability("orientation", "PORTRAIT");
 
-        capabilities.setCapability("app", "https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/Android.SauceLabs.Mobile.Sample.app.2.7.1.apk");
-        capabilities.setCapability("appWaitActivity", "com.swaglabsmobileapp.MainActivity");
+        capabilities.setCapability("browserName", "Chrome");
         capabilities.setCapability("name", methodName);
 
         if (appiumVersion !=  null) {
@@ -75,6 +76,7 @@ public class LocationAndroidAppTest {
             capabilities.setCapability("noReset", false);
             capabilities.setCapability("cacheId", cacheId);
         }
+
 
         // Grant permission for alert popups
         capabilities.setCapability("autoGrantPermissions", true);
@@ -93,6 +95,7 @@ public class LocationAndroidAppTest {
         } finally {
             getAndroidDriver().quit();
         }
+
     }
 
     public  AndroidDriver getAndroidDriver() {
@@ -100,92 +103,103 @@ public class LocationAndroidAppTest {
     }
 
     @Test
-    public void setLocationEiffelTower() {
-        AndroidDriver driver = getAndroidDriver();
-        System.out.println("Sauce - Start setLocation test");
+    public void setLocationMetro() {
 
-        login("standard_user", "secret_sauce");
+        System.out.println("Sauce - Start setLocationEiffelTower test");
+        AppiumDriver driver = getAndroidDriver();
+        navigateToRoyalMail(getAndroidDriver());
+        // change location to Tower Bridge
+        setGeoLocation(getAndroidDriver(), 51.5055,  -0.0754);
 
-        selectGeoLocationMenu();
-
-        waiting(2);
-        setGeoLocation(48.8584,  2.2945);
     }
 
-    @Test
-    public void setLocationTowerBridge() {
-        AndroidDriver driver = getAndroidDriver();
-        System.out.println("Sauce - Start setLocation test");
+    public void navigateToRoyalMail(AppiumDriver driver) {
 
-        login("standard_user", "secret_sauce");
+        driver.get("https://www.metrobankonline.co.uk/store-locator/");
 
-        selectGeoLocationMenu();
+        // Get the current context
+        String currentWebContext = driver.getContext();
 
-        waiting(2);
-        setGeoLocation(51.5055,  -0.0754);
-    }
+        WebDriverWait wait = new WebDriverWait(driver, 2);
+        // check cookie Notice
+        try {
+            final WebElement cookieNoticeBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#js-mbCookieNotice-button")));
+            cookieNoticeBtn.click();
+        } catch (Exception e){
+                // Do nothing - the popup dialog doesn't exist
+                System.out.println("cookie notice button doeesn't displayed" + e.getMessage());
+        }
 
-    public void login(String user, String pass){
-        String usernameID = "test-Username";
-        String passwordID = "test-Password";
-        String submitButtonID = "test-LOGIN";
+        // click on the geo location  button
+        getAndroidDriver().findElementByCssSelector(".map-buttons-overlay .geolocator").click();
 
-        AndroidDriver driver = getAndroidDriver();
-        WebDriverWait wait = new WebDriverWait(driver, 3);
+        // change context to native to allow Appium to handle the alerts popups
+        driver.context("NATIVE_APP");
 
-        final WebElement usernameEdit = wait.until(ExpectedConditions.visibilityOfElementLocated(new MobileBy.ByAccessibilityId(usernameID)));
-        usernameEdit.click();
-        usernameEdit.sendKeys(user);
+        String deviceApilovel = driver.getCapabilities().getCapability("deviceApiLevel").toString();
+        System.out.println("Sauce - Device API level is:"  + deviceApilovel);
 
-        WebElement passwordEdit = (WebElement) driver.findElementByAccessibilityId(passwordID);
-        passwordEdit.click();
-        passwordEdit.sendKeys(pass);
+        // check alert "metrobank wants to use your device location" alert
+        // for some android emulators version 8,9. The  id  of  the allow is "android:id/button1" - I didn't handle these cases
+        try {
+            final WebElement metroDeviceLocationAllow = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.android.chrome:id/positive_button")));
+            metroDeviceLocationAllow.click();
+        } catch (Exception e){
+            // Do nothing - the popup dialog doesn't exist
+            System.out.println("cookie notice button doeesn't displayed" + e.getMessage());
+        }
 
-        WebElement submitButton = (WebElement) driver.findElementByAccessibilityId(submitButtonID);
-        submitButton.click();
-    }
+         //for api < 29 (android 9 and below)
+        if (Long.valueOf(deviceApilovel) < 29) {
+         //permission popup with 2 options
+            try {
+                final WebElement allowBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.android.packageinstaller:id/permission_allow_button")));
+                allowBtn.click();
+            } catch (Exception e){
+                // Do nothing - the popup dialog doesn't exist
+                System.out.println("Alert is not present" + e.getMessage());
+            }
+        } else { // for api >= 29 (android 10 and above)
 
-    public void selectGeoLocationMenu(){
-        String testMenuName = "test-Menu";
-        String geoLocationName = "test-GEO LOCATION";
+         //permission popup with 3 options
+            try {
+                final WebElement allowBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.android.permissioncontroller:id/permission_allow_foreground_only_button")));
+                allowBtn.click();
+            } catch (Exception e){
+                // Do nothing - the popup dialog doesn't exist
+                System.out.println("Alert is not present" + e.getMessage());
+            }
+        }
 
-        AndroidDriver driver = getAndroidDriver();
-
-        // click on the menu
-        WebElement testMenu = (WebElement) driver.findElementByAccessibilityId(testMenuName);
-        testMenu.click();
-
-        // click on GEO Location
-        WebElement geoLocationMenu = (WebElement) driver.findElementByAccessibilityId(geoLocationName);
-        geoLocationMenu.click();
-
-        // To enable the App in the location service
+        // To enable the App if the location service are disabled
         // dialog: For a better experience, turn on device location, which uses Google’s location service.
         try {
-            WebDriverWait wait = new WebDriverWait(driver, 2);
             final WebElement BtnOK = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("android:id/button1")));
             BtnOK.click();
         } catch (Exception e){
             // Do nothing - the popup dialog doesn't exist
             System.out.println("Alert to turn on device location, is not present" + e.getMessage());
         }
+
+        // switch back to previous context (web)
+        driver.context(currentWebContext);
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        // This  will scroll down the page by  200 pixel vertical
+        js.executeScript("window.scrollBy(0,200)");
     }
 
-    public void setGeoLocation(double latitude, double longitude){
-        String latitudeLocator = "test-latitude";
-        String longitudeLocator = "test-longitude";
+    public void setGeoLocation(AppiumDriver driver, double latitude, double longitude) {
 
-        AndroidDriver driver = getAndroidDriver();
-        driver.setLocation(new Location(latitude, longitude, 0.0));
-
-        // wait 2 sec to update with the changes
+        // to see in the video the map before
         waiting(2);
 
-        // Verify
-        double actualLatitude = DoubleRounder.round(Double.valueOf(driver.findElementByAccessibilityId(latitudeLocator).getText()),4);
-        double actualLongitude = DoubleRounder.round(Double.valueOf(driver.findElementByAccessibilityId(longitudeLocator).getText()),4);
-        assertThat(actualLatitude).isEqualTo(latitude).as("Incorrect latitude");
-        assertThat(actualLongitude).isEqualTo(longitude).as("Incorrect longitude");
+        driver.setLocation(new Location(latitude, longitude, 0.0));
+        // click on the geo location  button
+        getAndroidDriver().findElementByCssSelector(".map-buttons-overlay .geolocator").click();
+        // click on the map view
+        getAndroidDriver().findElementByCssSelector(".radioSwitch-label_first").click();
+        // wait to update with the changes and see on the video
+        waiting(2);
     }
 
 }

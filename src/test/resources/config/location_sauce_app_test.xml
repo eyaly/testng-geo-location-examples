@@ -4,6 +4,7 @@
 	<test name="iOS RDC App test" enabled="true">
 		<parameter name="deviceName" value="iPhone.*"></parameter>
 		<parameter name="platformVersion" value="12"></parameter>
+		<parameter name="cacheId" value="ios_app_123"></parameter>
 		<classes>
 			<class name="tests.all.LocationIosAppTest"/>
 		</classes>
@@ -12,6 +13,7 @@
 	<test name="iOS RDC App new platform test" enabled="true">
 		<parameter name="deviceName" value="iPhone.*"></parameter>
 		<parameter name="platformVersion" value="14"></parameter>
+		<parameter name="cacheId" value="ios_app_new_123"></parameter>
 		<classes>
 			<class name="tests.all.LocationIosAppTest"/>
 		</classes>
@@ -20,6 +22,7 @@
 	<test name="Android RDC App test" enabled="true">
 		<parameter name="deviceName" value="Samsung.*"></parameter>
 		<parameter name="platformVersion" value="9"></parameter>
+		<parameter name="cacheId" value="android_app_123"></parameter>
 		<classes>
 			<class name="tests.all.LocationAndroidAppTest"/>
 		</classes>
@@ -28,6 +31,7 @@
 	<test name="Android RDC App new platform test" enabled="true">
 		<parameter name="deviceName" value="Samsung.*"></parameter>
 		<parameter name="platformVersion" value="11"></parameter>
+		<parameter name="cacheId" value="android_app_new_123"></parameter>
 		<classes>
 			<class name="tests.all.LocationAndroidAppTest"/>
 		</classes>

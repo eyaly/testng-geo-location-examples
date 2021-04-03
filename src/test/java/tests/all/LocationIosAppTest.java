@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import static helpers.Config.region;
 import static helpers.Utils.waiting;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +39,12 @@ public class LocationIosAppTest {
         String username = System.getenv("SAUCE_USERNAME");
         String accesskey = System.getenv("SAUCE_ACCESS_KEY");
 
-        String sauceUrl = "@ondemand.eu-central-1.saucelabs.com:443";
+        String sauceUrl;
+        if (region.equalsIgnoreCase("eu")) {
+            sauceUrl = "@ondemand.eu-central-1.saucelabs.com:443";
+        } else {
+            sauceUrl = "@ondemand.us-west-1.saucelabs.com:443";
+        }
         String SAUCE_REMOTE_URL = "https://" + username + ":" + accesskey + sauceUrl +"/wd/hub";
 
         String methodName = method.getName();

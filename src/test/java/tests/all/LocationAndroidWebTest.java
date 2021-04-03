@@ -3,12 +3,9 @@ package tests.all;
 
 import helpers.Utils;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileBy;
 import io.appium.java_client.android.AndroidDriver;
-import org.decimal4j.util.DoubleRounder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.html5.Location;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -28,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import static helpers.Config.host;
 import static helpers.Config.region;
 import static helpers.Utils.waiting;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class LocationAndroidWebTest {
 
@@ -77,10 +73,6 @@ public class LocationAndroidWebTest {
             capabilities.setCapability("cacheId", cacheId);
         }
 
-
-        // Grant permission for alert popups
-        capabilities.setCapability("autoGrantPermissions", true);
-
         androidDriver.set(new AndroidDriver(url, capabilities));
         getAndroidDriver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
@@ -127,7 +119,7 @@ public class LocationAndroidWebTest {
             cookieNoticeBtn.click();
         } catch (Exception e){
                 // Do nothing - the popup dialog doesn't exist
-                System.out.println("cookie notice button doeesn't displayed" + e.getMessage());
+                System.out.println("cookie notice button doesn't displayed" + e.getMessage());
         }
 
         // click on the geo location  button

@@ -3,24 +3,18 @@ package tests.all;
 
 import com.google.common.collect.ImmutableMap;
 import helpers.Utils;
-import io.appium.java_client.MobileBy;
-import io.appium.java_client.Setting;
 import io.appium.java_client.ios.IOSDriver;
 import org.decimal4j.util.DoubleRounder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.html5.Location;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -78,7 +72,6 @@ public class LocationIosAppTest {
             capabilities.setCapability("appiumVersion", appiumVersion);
         }
 
-
         if (cacheId !=  null) {
             capabilities.setCapability("noReset", false);
             capabilities.setCapability("cacheId", cacheId);
@@ -94,7 +87,6 @@ public class LocationIosAppTest {
         // and select the "Allow While Using App" (iOS 13 and above)
         getiosDriver().setSetting("acceptAlertButtonSelector",
                 "**/XCUIElementTypeButton[`label == \"Allow While Using App\"`]");
-
 
         // for simulator - By default the location services is enabled
         if (isRDC) {
@@ -172,7 +164,6 @@ public class LocationIosAppTest {
 
         driver.findElement(testMenu).click();
         driver.findElement(testGeoLocationItem).click();
-
     }
 
     public void setGeoLocation(double latitude, double longitude){

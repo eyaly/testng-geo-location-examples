@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import helpers.Utils;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
-import org.decimal4j.util.DoubleRounder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
@@ -26,7 +25,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import static helpers.Utils.waiting;
 
 
@@ -75,21 +73,12 @@ public class LocationIosWebTest {
             capabilities.setCapability("cacheId", cacheId);
         }
 
-        // this capability will work for alerts with 2 options (iOS 12 and below)
-//        capabilities.setCapability("autoAcceptAlerts", true);
-
         if (deviceName.contains("Simulator")) {
             isRDC = false;
         }
 
         iosDriver.set(new IOSDriver(url, capabilities));
         getIosDriver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-
-        // iOS: change the setting to accept alerts with 3 options
-        // and select the "Allow While Using App" (iOS 13 and above)
-//        getIosDriver().setSetting("acceptAlertButtonSelector",
-//                "**/XCUIElementTypeButton[`label == \"Allow While Using App\"`]");
-
 
         // for simulator - By default the location services is enabled
         if (isRDC) {
@@ -105,7 +94,7 @@ public class LocationIosWebTest {
                 getIosDriver().launchApp();
             }
         }
-           }
+    }
 
     @AfterMethod
     public void teardown(ITestResult result) {

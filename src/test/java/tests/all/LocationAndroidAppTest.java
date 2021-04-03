@@ -6,7 +6,6 @@ import io.appium.java_client.android.AndroidDriver;
 import org.decimal4j.util.DoubleRounder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.html5.Location;
 import org.openqa.selenium.remote.DesiredCapabilities;

@@ -56,8 +56,8 @@ For more information on this step please visit: [Application Storage](https://wi
 > NOTE: Make sure you are in the folder `testng-geo-location-examples` when you execute this command
 
 ## Run Web App tests on Android real devices, iOS real devices, Android Emulators and iOS Simulators in the Sauce Labs Platform
-* The test flow for [iOS](https://github.com/eyaly/testng-geo-location-examples/blob/master/src/test/java/tests/all/LocationIosWebTest.java): (1) navigate to google map (2) Click on "your location" (3) change the geo location using Appium command "setLocation" to Eiffel Tower, Paris, France
-* The test flow for [Android](https://github.com/eyaly/testng-geo-location-examples/blob/master/src/test/java/tests/all/LocationAndroidWebTest.java): (1) navigate to store-locator in MetroBank (2) Click on geo location button to find the services around me (3) change the geo location using Appium command "setLocation" to Tower Bridge, London, UK
+* The test flow for [iOS](https://github.com/eyaly/testng-geo-location-examples/blob/master/src/test/java/tests/all/LocationIosWebTest.java): (1) navigate to google map (2) click on "your location" (3) change the geo location using Appium command "setLocation" to Eiffel Tower, Paris, France
+* The test flow for [Android](https://github.com/eyaly/testng-geo-location-examples/blob/master/src/test/java/tests/all/LocationAndroidWebTest.java): (1) navigate to store-locator in MetroBank (2) click on geo location button to find the services around me (3) change the geo location using Appium command "setLocation" to Tower Bridge, London, UK
 * The tests handle the location services alerts by try and catch, waiting 2 sec for the alerts popup.
 * The TestNG xml file to execute the tests can be found [here](https://github.com/eyaly/testng-geo-location-examples/blob/master/src/test/resources/config/location_sauce_web_test.xml).
 * In the xml file, change the "thread-count="20" with the number of thread you want to run in parallel. The xml file contains the executions on all the platforms (Android, iOS, real devices, emulators and simulators)

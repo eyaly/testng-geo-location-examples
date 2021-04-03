@@ -4,6 +4,8 @@ The scripts example how to handle the location services alerts, how to change th
 There are examples for Native Apps and for Web Apps.
 
 - [Native App on Sauce Platform](#run-native-app-tests-on-android-real-devices-ios-real-devices-android-emulators-and-ios-simulators-in-the-sauce-labs-platform)
+- [Web App on Sauce Platform](#run-web-app-tests-on-android-real-devices-ios-real-devices-android-emulators-and-ios-simulators-in-the-sauce-labs-platform)
+
 
 The framework uses testNG xml file for parallel executions. All the tests in the same class will run in parallel on different devices 
 ## Important information
@@ -27,6 +29,7 @@ For more information on this step please visit: [Application Storage](https://wi
 * Appium Capabilities for Real Device Testing: [Appium Capabilities](https://wiki.saucelabs.com/display/DOCS/Appium+Capabilities+for+Real+Device+Testing).
 * Sauce Labs Data Center Endpoints: [Data Center EndPoints](https://wiki.saucelabs.com/display/DOCS/Data+Center+Endpoints).
 * How to set the pass/fail status of a test: [Annotating Tests with Selenium's JavaScript Executor](https://wiki.saucelabs.com/display/DOCS/Annotating+Tests+with+Selenium%27s+JavaScript+Executor).
+
 ## Run Native App tests on Android real devices, iOS real devices, Android Emulators and iOS Simulators in the Sauce Labs Platform
 * The tests will run on Sauce [Demo app](https://github.com/saucelabs/sample-app-mobile/releases). 
 * The test flow: (1) login (2) click on the hamburger menu (3) select the "GEO LOCATION" from the menu  (4) change the geo location using Appium command "setLocation"
@@ -41,7 +44,7 @@ For more information on this step please visit: [Application Storage](https://wi
 >          getiosDriver().setSetting("acceptAlertButtonSelector", "**/XCUIElementTypeButton[`label == \"Allow While Using App\"`]");
 * The TestNG xml file to execute the tests can be found [here](https://github.com/eyaly/testng-geo-location-examples/blob/master/src/test/resources/config/location_sauce_app_test.xml).
 * In the xml file, change the "thread-count="20" with the number of thread you want to run in parallel. The xml file contains the executions on all the platforms (Android, iOS, real devices, emulators and simulators)
-* In the xml file, each test contains "enabled="true". You can changee  it to "false" if you don't want to execute this test.
+* In the xml file, each test contains "enabled="true". You can change it to "false" if you don't want to execute this test.
 * The command line to run the tests
 
       // If using the US DC
@@ -52,5 +55,21 @@ For more information on this step please visit: [Application Storage](https://wi
     
 > NOTE: Make sure you are in the folder `testng-geo-location-examples` when you execute this command
 
+## Run Web App tests on Android real devices, iOS real devices, Android Emulators and iOS Simulators in the Sauce Labs Platform
+* The test flow for [iOS](https://github.com/eyaly/testng-geo-location-examples/blob/master/src/test/java/tests/all/LocationIosWebTest.java): (1) navigate to google map (2) Click on "your location" (3) change the geo location using Appium command "setLocation" to Eiffel Tower, Paris, France
+* The test flow for [Android](https://github.com/eyaly/testng-geo-location-examples/blob/master/src/test/java/tests/all/LocationAndroidWebTest.java): (1) navigate to store-locator in MetroBank (2) Click on geo location button to find the services around me (3) change the geo location using Appium command "setLocation" to Tower Bridge, London, UK
+* The tests handle the location services alerts by try and catch, waiting 2 sec for the alerts popup.
+* The TestNG xml file to execute the tests can be found [here](https://github.com/eyaly/testng-geo-location-examples/blob/master/src/test/resources/config/location_sauce_web_test.xml).
+* In the xml file, change the "thread-count="20" with the number of thread you want to run in parallel. The xml file contains the executions on all the platforms (Android, iOS, real devices, emulators and simulators)
+* In the xml file, each test contains "enabled="true". You can change it to "false" if you don't want to execute this test.
+* The command line to run the tests
+
+      // If using the US DC
+      mvn clean install -DtestngXmlFile=location_sauce_web_test.xml -Dregion=us
+    
+      // If using the EU DC
+      mvn clean install -DtestngXmlFile=location_sauce_web_test.xml -Dregion=eu
+    
+> NOTE: Make sure you are in the folder `testng-geo-location-examples` when you execute this command
 
 

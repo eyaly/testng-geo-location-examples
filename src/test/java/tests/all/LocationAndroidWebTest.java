@@ -99,13 +99,13 @@ public class LocationAndroidWebTest {
 
         System.out.println("Sauce - Start setLocationEiffelTower test");
         AppiumDriver driver = getAndroidDriver();
-        navigateToRoyalMail(getAndroidDriver());
+        navigateToMetro(getAndroidDriver());
         // change location to Tower Bridge
         setGeoLocation(getAndroidDriver(), 51.5055,  -0.0754);
 
     }
 
-    public void navigateToRoyalMail(AppiumDriver driver) {
+    public void navigateToMetro(AppiumDriver driver) {
 
         driver.get("https://www.metrobankonline.co.uk/store-locator/");
 

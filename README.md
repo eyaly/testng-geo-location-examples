@@ -1,14 +1,14 @@
 # Testing on Mobile Devices with Location Services  
-This project contains Java examples for running Appium tests on Sauce Labs platform on local emualtors and simulators.
+This project contains Java examples for running Appium tests on Sauce Labs platform and on local emualtors and simulators.
 The scripts example how to handle the location services alerts, how to change the geo-location and fo iOS - how to enable the location services in the iOS settings. 
 There are examples for Native Apps and for Web Apps.
 
-- [Native Android App on real devices](#run-native-app-tests-on-android-real-devices,-ios-real-devices,-android-emulators-and-ios-simulators-in-the-sauce-labs-platform)
+- [Native App on Sauce Platform](#run-native-app-tests-on-android-real-devices-ios-real-devices-android-emulators-and-ios-simulators-in-the-sauce-labs-platform)
 
 The framework uses testNG xml file for parallel executions. All the tests in the same class will run in parallel on different devices 
 ## Important information
 ### Environment variables for Sauce Labs
-The examples in this repository that can run on Sauce Labs use environment variables, make sure you've added the following
+The examples in this repository that can run on Sauce Labs, use environment variables, make sure you've added the following
 
     # For Sauce Labs Real devices
     export SAUCE_USERNAME=********
@@ -44,11 +44,11 @@ For more information on this step please visit: [Application Storage](https://wi
 * In the xml file, each test contains "enabled="true". You can changee  it to "false" if you don't want to execute this test.
 * The command line to run the tests
 
-    // If using the US DC
-    mvn clean install -DtestngXmlFile=location_sauce_app_test.xml -Dregion=us
+      // If using the US DC
+      mvn clean install -DtestngXmlFile=location_sauce_app_test.xml -Dregion=us
     
-    // If using the EU DC
-    mvn clean install -DtestngXmlFile=location_sauce_app_test.xml -Dregion=eu
+      // If using the EU DC
+      mvn clean install -DtestngXmlFile=location_sauce_app_test.xml -Dregion=eu
     
 > NOTE: Make sure you are in the folder `testng-geo-location-examples` when you execute this command
 
